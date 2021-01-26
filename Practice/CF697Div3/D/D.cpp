@@ -2,39 +2,33 @@
 using namespace std;
 
 const int MAX_ITEMS = int(2e5+5);
-int t, n, m;
-pair<int, int> app[MAX_ITEMS];
+int t, n, m, memStore[MAX_ITEMS], score;
+vector<int> regApp, impApp;
 
 
 int main() {
-    freopen("D.txt", "r", stdin);
+    // freopen("D.txt", "r", stdin);
     cin >> t;
     while (t--) {
-        cout << endl;
         cin >> n >> m;
-        for (int i=0; i<n; i++) cin >> app[i].second;
-        for (int i=0; i<n; i++) cin >> app[i].first;
-        sort(app, app+n);
-        long long ans = int(1e9), convScore = 0, memScore = 0;
-        int fPtr = 0, sPtr = 0;
-        while (fPtr <= sPtr) {
-            while (fPtr < sPtr) {
-                memScore -= 1LL * app[fPtr].second;
-                convScore -= 1LL * app[fPtr].first;
-                fPtr++;
-                if (memScore >= m) ans = min(ans, convScore);
-                else break;
-            }
-            while (sPtr < n && memScore < m) {
-                memScore += 1LL * app[sPtr].second; 
-                convScore += 1LL * app[sPtr].first;
-                sPtr++;
-            }
-            cout << memScore << endl;
-            if (memScore >= m) ans = min(ans, convScore);
+        for (int i=0; i<n; i++) cin >> memStore[i];
+        for (int i=0; i<n; i++) {
+            cin >> score;
+            if (score == 1) regApp.push_back(memStore[i]);
+            else if (score == 2) impApp.push_back(memStore[i]);
         }
-        if (ans == int(1e9)) ans = -1;
-        cout << ans << endl;
+        sort(regApp.rbegin(), regApp.rend());
+        sort(impApp.rbegin(), impApp.rend());
+        long long sumRegApp = 0, sumImpApp = accumulate(impApp.begin(), impApp.end(), 0LL);
+        int ans = INT_MAX, r = (int) impApp.size();
+        for (int l=0; l <= (int) regApp.size(); l++) {
+            while (r > 0 && sumRegApp + sumImpApp - impApp[r-1] >= m) sumImpApp -= impApp[--r];
+            if (sumRegApp + sumImpApp >= m) ans = min(ans, 2 * r + l);
+            if (l != (int)regApp.size()) sumRegApp += regApp[l];
+        }
+        regApp.clear();
+        impApp.clear();
+        cout << (ans == INT_MAX ? -1 : ans) << endl;
     }
     return 0;
 }
