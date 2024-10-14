@@ -12,4 +12,5 @@
 *.o
 *.swp
 *.cph
+*.DS_Store
 
