@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use std::io::{ self, BufRead };
+use std::io::{ self, BufRead, Write };
 use std::str::FromStr;
 
 struct Scanner<R> {
@@ -21,7 +21,7 @@ impl<R: BufRead> Scanner<R> {
         loop {
             if self.pos >= self.buffer.len() {
                 self.buffer.clear();
-                self.reader.read_until(b"\n", &mut self.buffer).unwrap();
+                self.reader.read_until(b'\n', &mut self.buffer).unwrap();
                 self.pos = 0;
             }
 
@@ -29,12 +29,12 @@ impl<R: BufRead> Scanner<R> {
                 self.pos += 1;
             }
             if self.pos < self.buffer.len() {
-                self.start = self.pos;
+                let start: usize = self.pos;
                 while self.pos < self.buffer.len() && !self.buffer[self.pos].is_ascii_whitespace() {
                     self.pos += 1;
                 }
                 return std::str
-                    ::from_utf8(&self.buffer[self.start..self.pos])
+                    ::from_utf8(&self.buffer[start..self.pos])
                     .unwrap()
                     .parse::<T>()
                     .ok()
@@ -48,17 +48,42 @@ impl<R: BufRead> Scanner<R> {
     }
 }
 
-fn dfs(node: usize, edges: &Vec<Vec<usize>>) {}
+fn dfs(node: usize, edges: &[Vec<usize>], visited: &mut [bool], h: &mut Vec<usize>) {
+    visited[node] = true;
+    h.push(node);
+    for &v in &edges[node] {
+        if !visited[v] {
+            dfs(v, edges, visited, h);
+        }
+    }
+}
 
 fn solve<R: BufRead>(sc: &mut Scanner<R>) {
     let n: usize = sc.next();
     let mut edges: Vec<Vec<usize>> = vec![vec![]; n + 1];
+    let mut visited: Vec<bool> = vec![false; n+1];
+    let mut h: Vec<usize> = Vec::new();
     for _ in 0..n - 1 {
         let u: usize = sc.next();
         let v: usize = sc.next();
         edges[u].push(v);
         edges[v].push(u);
     }
+    dfs(1, &edges, &mut visited, &mut h);
+    for i in (0..n - 1).step_by(2) {
+        println!("? {} {}", h[i], h[i + 1]);
+        io::stdout().flush().unwrap();
+        let mut res: i32 = sc.next();
+        if res == 1 {
+            println!("? {} {}", h[i], h[i]);
+            io::stdout().flush().unwrap();
+            res = sc.next();
+            println!("! {}", if res == 1 { h[i] } else { h[i + 1] });
+            return;
+        }
+    }
+    println!("! {}", h[n - 1]);
+    io::stdout().flush().unwrap();
 }
 
 fn main() {
