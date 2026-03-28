@@ -9,21 +9,30 @@ int t;
 pair<int, string> c[3];
 string ans = "";
 
-string select_next(bool follow_rule = false) {
-    sort(c, c + 3);
+string select_next() {
+    int mmax = 0;
     int len = ans.length();
+    int p = -1;
     for (int i = 2; i >= 0; i--) {
         if (c[i].first == 0) continue;
-        if (follow_rule) {
-            if (ans[len - 1] == c[i].second[0]) {
-                continue;
-            }
-            if (len > 2 && ans[len - 3] == c[i].second[0]) {
-                continue;
+        if (ans[len - 1] == c[i].second[0]) {
+            continue;
+        }
+        if (len > 2 && ans[len - 3] == c[i].second[0]) {
+            continue;
+        }
+        if (c[i].first > mmax) {
+            mmax = c[i].first;
+            p = i;
+        } else if (mmax == c[i].first) {
+            if (len >= 2 && ans[len - 2] == c[i].second[0]) {
+                p = i;
             }
         }
-        c[i].first--;
-        return c[i].second;
+    }
+    if (p != -1) {
+        c[p].first--;
+        return c[p].second;
     }
     return "";
 }
@@ -39,17 +48,16 @@ void solve() {
         c[2].second = "B";
         ans = "";
         while (true) {
-            string t = select_next(true);
-            if (t == "") break;
-            ans += t;
+            string next = select_next();
+            if (next == "") break;
+            ans += next;
         }
-        // ans += select_next();
         cout << ans << endl;
     }
 }
 
 int main() {
-    freopen("input.txt", "r", stdin);
+    // freopen("input.txt", "r", stdin);
 
     // Boost C++ IO speed
     ios_base::sync_with_stdio(false);
