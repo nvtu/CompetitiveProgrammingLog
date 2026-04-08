@@ -13,14 +13,9 @@ void solve() {
     while (t--) {
         cin >> n;
         for (int i = 1; i <= n; i++) cin >> h[i];
-        long long ans = (h[n] < h[n - 1] ? h[n - 1] : h[n] + 1);
-        if (n == 1) ans--;
-        for (int i = n - 1; i > 1; i--) {
-            if (h[i] < h[i - 1]) {
-                ans += max(0LL, h[i - 1] - ans);
-            } else {
-                ans += max(0LL, h[i] - h[i - 1] + 1 - ans);
-            }
+        long long ans = h[n];
+        for (int i = n - 1; i >= 1; i--) {
+            ans = max(ans + 1, h[i]);
         }
         cout << ans << endl;
     }
