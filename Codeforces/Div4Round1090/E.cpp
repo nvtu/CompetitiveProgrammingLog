@@ -1,25 +1,23 @@
 #include <bits/stdc++.h>
-#define sqr(x) (x) * (x)
 using namespace std;
+#define sqr(x) (x) * (x)
+#define print(x, n)                                  \
+    for (int i = 0; i < n; i++) cout << x[i] << " "; \
+    cout << endl;
 
-const int MAX_SIZE = int(2e5 + 5);
+const int MAX_SIZE = int(1e5 + 5);
 const long long MOD = int(1e9 + 7);
 
-int t, n, p[MAX_SIZE];
+int t, n, a[4000];
 
 void solve() {
     cin >> t;
     while (t--) {
         cin >> n;
-        for (int i = 1; i <= n; i++) cin >> p[i];
         int ans = 0;
-        vector<bool> avail(n + 1, false);
-        for (int i = 1; i <= n; i++) {
-            if (avail[p[i]]) break;
-            if (p[i] <= i) {
-                ans++;
-                avail[p[i]] = true;
-            }
+        for (int i = 0; i < n; i++) cin >> a[i];
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) ans = max(ans, a[i] ^ a[j]);
         }
         cout << ans << endl;
     }
